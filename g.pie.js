@@ -216,17 +216,24 @@
                 chart.labels[i].push(paper[mark](x + 5, h, 5).attr({ fill: clr, stroke: "none" }));
                 chart.labels[i].push(txt = paper.text(x + 20, h, labels[j] || values[j]).attr(chartinst.txtattr).attr({ fill: opts.legendcolor || "#000", "text-anchor": "start"}));
                 covers[i].label = chart.labels[i];
-                h += txt.getBBox().height * 1.2;
+                
+                h += txt.getBBox(true).height * 1.2;
             }
 
-            var bb = chart.labels.getBBox(),
+            /* 
+             * Getting BBox without transforms. Otherwise
+             * we`ll got a bug with bb.height growing infinitely
+             * while consequentially remowing and recreating
+             * pies (really haven`t finally got why it happens, but use of
+             * "isWithoutTransform" really helps)
+             */
+            var bb = chart.labels.getBBox(true),
                 tr = {
                     east: [0, -bb.height / 2],
                     west: [-bb.width - 2 * r - 20, -bb.height / 2],
                     north: [-r - bb.width / 2, -r - bb.height - 10],
                     south: [-r - bb.width / 2, r + 10]
                 }[dir];
-
             chart.labels.translate.apply(chart.labels, tr);
             chart.push(chart.labels);
         };
